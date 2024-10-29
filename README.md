@@ -241,7 +241,7 @@ interface IPage {
 
 
 # ModalContainer
-Класс отвечает за отображение модального окна. Модальное окно общее для CardPreviewItem, Basket, Order, Contacts, Success.\ 
+Класс отвечает за отображение модального окна. Модальное окно общее для CardPreviewItem, Basket, Order, Contacts, Success.\
 Класс унаследован от базового класса Component.
 
 Поля:
