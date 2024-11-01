@@ -95,8 +95,7 @@ interface IModalContainerData {
 ## Корзина
 ```
 interface IBasket {
-    basketList: HTMLElement[];
-    total: number;
+    basketList: HTMLElement[];    
 }
 ```
 ## Страница
@@ -105,6 +104,15 @@ interface IPage {
     cardList: HTMLElement[];
 }
 ```
+## Заказ
+export interface IOrder extends IOrderForm, IContactsForm{
+    items: string[]
+}
+
+## Ответ от сервера после отправки post-запроса
+export interface IOrderResult {
+    id: string;
+	total: number;
 
 # --=Интерфейсы базовых классов==-
 
@@ -185,10 +193,12 @@ interface IPage {
 - Конструктор - передает объект класса EventEmitter
 - `addItem(item: IProductItem)` - добавить товар в массив
 - `getItems(): IProductItem[]` - вернуть все товары
+- `getIdItems(): string[]` - вернуть id карточек из корзины, кроме товаров - бесценно
 - `deleteItem(id: string)` - удалить товар из массива
 - `getTotal()` - вернуть итоговую сумму товаров в массиве
 - `isItemInBasket(id: string)` - проверить содержится ли товар в корзине
 - `getCount()` - вернуть количество товаров в массиве
+- `clearBasket()` - очистить корзину
 - `changed()` - инициация события `emit('basket:change')`
 
 ## OrderModel
@@ -198,13 +208,17 @@ interface IPage {
 - `events: IEvents` - объект, используемый для инициации событий, связанных с изменением данных в модели
 - `payment: string` - способ оплаты
 - `address: string` - адрес
-- `errors: string` - текст ошибки валидации
+- `errors: FormErrors` - текст ошибки валидации
 - `phone: string` - телефон
 - `email: string` - почта
+- `items: []` - список id товаров заказа
 
 Методы:
-- `setOrderField(field: string, value: string)` - валидация полей формы order и contacts
-- `getOrder()` - вернуть данные заказа для отправки на сервер
+- конструктор - передает events
+- `setItems(items: string[])` - передать список id товаров в заказ
+- `setOrderField(field: keyof IOrderForm, value: string)` - валидация полей формы order
+- `setContactsField(field: keyof IContactsForm, value: string)` - валидация полей формы contacts
+- `validateOrder()` - вернуть результат валидации полей
 
 # -==Интерфейсы отображений (View)==-
 
@@ -272,6 +286,7 @@ interface IPage {
 - `set description(value: string)` - устанавливае описание товара
 - `set category(value: string)` - устанавливает категорию карточки и цветовое оформление
 - `set canBuy(status: boolean)` - проверка на повторное добавление товара в корзину
+- `set image(value: string)` - задать изображение
 
 ## Page
 Класс отвечает за главную страницу, на которой отображается список карточек (.gallery). Также обрабатывается взаимодействие с корзиной, 
@@ -299,7 +314,9 @@ interface IPage {
 Класс унаследован от базового класса Component.
 
 Поля:
-- элементы разметки шаблона карточки.
+- `basketContaner: HTMLElement` - элемент-контейнер для карточек товаров
+- `basketButton:HTMLButtonElement` - кнопка оформить
+- `basketPrice: HTMLSpanElement` - элемент сумма товаров в корзине
 - `events: IEvents` - объект, используемый для инициации событий, связанных с изменением данных в модели
 
 Методы:
@@ -327,15 +344,14 @@ interface IPage {
 
 # Form
 Класс отвечает за отображение модального окна формы заказа и контактов. Отвечает за валидацию полей формы.
+Унследован от Component
 
 Поля:
-
--`submit: HTMLButtonElement` - кнопка Далее, Оформить
-- `_errors: HTMLElement` - поле для вывода ошибок
+- `orderButton: HTMLButtonElement` - кнопка Далее, Оформить
+- `formErrors: HTMLSpanElement` - поле для вывода ошибок
 
 Методы:
 - конструктор - инициирует элементы формы, регистрирует события submit, input
-- `onInputChange` - инициация  события при изменении состояния элементов формы
 - `set valid(value: boolean) - изменение состояния кнопки Далее, Оформить
 - `set errors(value: string) - вывод сообщения
 - `render(state: Partial<T> & IFormState)` - переопределение метода базового класса Component
@@ -345,33 +361,33 @@ interface IPage {
 Класс унаследован от Form.
 
 Поля класса:
-- элементы разметки шаблона карточки.
+- `cardButton: HTMLButtonElement` - кнопка оплаты карточкой
+- `cashButton: HTMLButtonElement` - кнопка оплаты наличкой
 - `events: IEvents` - объект, используемый для инициации событий, связанных с изменением данных в модели
 
 Методы:
 - `set address(value: string)`  - изменяет поле адреса
 - `set setPayment(value: string)` - изменяет тип оплаты
-
+- `clickChange(name: string)` - событие нажатия кнопок вариантов оплаты
 
 # Contacts
 Класс отвечает за отображение модального окна формы контактов. Содержит телефон и почту.
-
-Поля класса:
-- элементы разметки шаблона карточки.
-- `events: IEvents` - объект, используемый для инициации событий, связанных с изменением данных в модели
+Класс унаследован от Form.
 
 Методы:
-- `set email(value: string)`  - изменяет поле почта
-- `set phone(value: string)`  - изменяет поле телефон
+- `set email(value: string)` - изменяет поле почта
+- `set phone(value: string)` - изменяет поле телефон
 
 
 # -==Перечисление событий и их интерфейсы==-
 
-- `order:open` - открыть форму заказа
-- `contacts:open` - открыть форму контакты
+- `order:open` - открыть форму Заказ
+- `order:submit` - открыть форму Контакты
+- `contacts:submit` - отправить заказ на сервер
 - `order:change` - изменение поей заказа
 - `contacts:change` - изменение полей контактов
 - `formErrors:change` - валидация
+- `order-model:change` - ответ из OrderModel с результатом валидации формы
 - `items:changed` - изменение модели данных LarkModel
 - `card-basket-item:remove` - удалить карточку из корзины
 - `card-basket-item:add` - добавить карточку в корзину

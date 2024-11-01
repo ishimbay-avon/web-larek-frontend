@@ -10,17 +10,13 @@ export interface IProductItem {
 }
 
 export interface IOrderForm {
-	address: string;
-	errors: string;
+	payment:string;
+	address: string;	
 }
 
 export interface IContactsForm {
 	email: string;
 	phone: string;
-}
-
-export interface IModalContainerData {
-	content: HTMLElement;
 }
 
 export interface IBasket {
@@ -29,4 +25,13 @@ export interface IBasket {
 
 export interface IPage {
     cardList: HTMLElement[];
+}
+
+export interface IOrder extends IOrderForm, IContactsForm{
+    items: string[]
+}
+
+export interface IOrderResult {
+    id: string;
+	total: number;
 }
