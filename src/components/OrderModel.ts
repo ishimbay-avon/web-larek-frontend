@@ -11,8 +11,7 @@ export class OrderModel {
         payment: '',
         address: '',
         phone: '',
-        email: '',
-        items: []
+        email: ''
     };    
     formErrors: FormErrors = {};
 
@@ -20,22 +19,25 @@ export class OrderModel {
         this.events=events;
     }
 
-    setItems(items: string[]) {
-        this.order.items = items;        
-    }
-
     setOrderField(field: keyof IOrderForm, value: string) {        
-        this.order[field] = value;
-        this.events.emit('order-model:change');
-
+        this.order[field] = value;        
         this.validateOrder();
+
+        this.events.emit('order-model:change');
     }
 
     setContactsField(field: keyof IContactsForm, value: string) {        
-        this.order[field] = value;
-        
+        this.order[field] = value;        
         this.validateOrder();
     }
+
+    clearFields(){
+		this.order.payment='';
+		this.order.address='';
+		this.order.phone='';
+        this.order.email='';
+		this.formErrors = {};
+	}
 
     validateOrder() {        
         const errors: typeof this.formErrors = {};

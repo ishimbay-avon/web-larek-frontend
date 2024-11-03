@@ -27,8 +27,7 @@ export interface IPage {
     cardList: HTMLElement[];
 }
 
-export interface IOrder extends IOrderForm, IContactsForm{
-    items: string[]
+export interface IOrder extends IOrderForm, IContactsForm{    
 }
 
 export interface IOrderResult {

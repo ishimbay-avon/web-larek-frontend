@@ -21,7 +21,7 @@ export class Form<T> extends Component<IFormState> {
 			'button[type="submit"]',
 			this.container
 		) as HTMLButtonElement;
-
+		
 		this.container.addEventListener('submit', (evt) => {
 			evt.preventDefault();			
 			this.events.emit(`${this.container.name}:submit`);
@@ -30,7 +30,7 @@ export class Form<T> extends Component<IFormState> {
 		this.container.addEventListener('input', (evt) => {
 			const target = evt.target as HTMLInputElement;
 			const field = target.name;
-			const value = target.value;
+			const value = target.value;			
 			this.events.emit(`${this.container.name}:change`, { field, value });
 		});		
 	}
@@ -44,7 +44,7 @@ export class Form<T> extends Component<IFormState> {
 	}
 
 	render(state: Partial<T> & IFormState) {
-		const { valid, errors, ...inputs } = state;
+		const { valid, errors, ...inputs } = state;		
 		super.render({ valid, errors });
 		Object.assign(this, inputs);
 		return this.container;

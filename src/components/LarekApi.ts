@@ -18,8 +18,7 @@ export class LarekApi extends Api {
 		);
 	}
 
-	setOrder(order: IOrder, totalSinapses:number): Promise<IOrderResult> {
-        const orderWithTotal = { ...order, total: totalSinapses }        
-		return this.post('/order', orderWithTotal).then((data: IOrderResult) => data);
+	setOrder(order: IOrder): Promise<IOrderResult> {              
+		return this.post('/order', order).then((data: IOrderResult) => data);
 	}
 }

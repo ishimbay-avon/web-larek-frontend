@@ -6,7 +6,7 @@ import { EventEmitter } from './base/events';
 export class Order extends Form<IOrderForm> {
 	protected cardButton: HTMLButtonElement;
 	protected cashButton: HTMLButtonElement;
-
+	
 	constructor(container: HTMLFormElement, events: EventEmitter) {
 		super(container, events);
 
@@ -18,7 +18,7 @@ export class Order extends Form<IOrderForm> {
 			'button[name="cash"]',
 			this.container
 		) as HTMLButtonElement;
-
+		
 		this.cashButton.addEventListener('click', (evt) => {
 			const target = evt.target as HTMLButtonElement;
 
@@ -37,33 +37,12 @@ export class Order extends Form<IOrderForm> {
 		this.events.emit(`${this.container.name}:change`, { field, value });
 	}
 
-	set address(value: string) {
-		(this.container.elements.namedItem('address') as HTMLInputElement).value =
-			value;
+	set address(value: string) {			
+		(this.container.elements.namedItem('address') as HTMLInputElement).value = value;		
 	}
 
-	set payment(value: string) {		
-		if (value === '') {
-			(
-				this.container.elements.namedItem('card') as HTMLButtonElement
-			).classList.add('button_alt');
-			(
-				this.container.elements.namedItem('cash') as HTMLButtonElement
-			).classList.add('button_alt');
-		} else if (value === 'card') {
-			(
-				this.container.elements.namedItem('card') as HTMLButtonElement
-			).classList.remove('button_alt');
-			(
-				this.container.elements.namedItem('cash') as HTMLButtonElement
-			).classList.add('button_alt');
-		} else if (value === 'cash') {
-			(
-				this.container.elements.namedItem('cash') as HTMLButtonElement
-			).classList.remove('button_alt');
-			(
-				this.container.elements.namedItem('card') as HTMLButtonElement
-			).classList.add('button_alt');
-		}
-	}
+	set payment(value: string) {				
+		this.toggleClass(this.cardButton, 'button_alt', value === 'card')
+		this.toggleClass(this.cashButton, 'button_alt', value === 'cash')
+	}		
 }

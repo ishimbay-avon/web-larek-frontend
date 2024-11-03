@@ -18,12 +18,12 @@ protected basketItemDeleteButton:HTMLButtonElement;
         });
     }
 
-    set itemIndex(value: string) {
+    set index(value: string) {
         this.setText(this.basketItemIndex, value);
     }
 
-    render(data: {id:string, index:number,title:string,price:number}): HTMLElement {
-        this.itemIndex=String(data.index);
-        return super.render(data);
-    }
+    // render(data: {id:string, index:number,title:string,price:number}): HTMLElement {
+    //     this.itemIndex=String(data.index);
+    //     return super.render(data);
+    // }
 }

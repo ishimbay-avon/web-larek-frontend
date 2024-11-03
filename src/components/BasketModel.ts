@@ -41,9 +41,8 @@ export class BasketModel {
     }
 
     clearBasket() {
-        this.items.forEach(element => {
-            this.deleteItem(element.id);
-        });
+        this.items=[];
+        this.changed();
     }
 
     protected changed(){

@@ -35,7 +35,11 @@ const contacts = new Contacts(cloneTemplate(contactsFormTemplate), events);
 
 const cardPreview = new CardPreviewItem(cloneTemplate(cardPreviewTemplate),events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-
+const success = new Success(cloneTemplate(successTemplate), {
+	onClick: () => {
+		modalContainer.close();		
+	},
+});
 const itemTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement; //шаблон карточки
 
 const larekModel = new LarekModel(events);
@@ -51,14 +55,15 @@ api.getProducts()
 
 // Открыть форму Заказ
 events.on('order:open', () => {
+	orderModel.clearFields();
 	modalContainer.close();
 	modalContainer.render({
 		content: order.render({
-			address: '',
-			payment: '',
-			valid: false,
-			errors: [],
-		}),
+			payment:orderModel.order.payment,
+			address:orderModel.order.address,
+			errors:[],
+			valid:false
+		})
 	});
 });
 
@@ -67,8 +72,8 @@ events.on('order:submit', () => {
 	modalContainer.close();
 	modalContainer.render({
 		content: contacts.render({
-			email: '',
-			phone: '',
+			email: orderModel.order.email,
+			phone: orderModel.order.phone,
 			valid: false,
 			errors: [],
 		}),
@@ -77,17 +82,13 @@ events.on('order:submit', () => {
 
 // Отправить заказ на сервер
 events.on('contacts:submit', () => {
-	orderModel.setItems(basketModel.getIdItems());
+
+	const orderData={ ...orderModel.order,items:basketModel.getIdItems(), total: basketModel.getTotal() };
 
 	api
-		.setOrder(orderModel.order, basketModel.getTotal())
+		.setOrder(orderData)
 		.then((result) => {
-			const success = new Success(cloneTemplate(successTemplate), {
-				onClick: () => {
-					modalContainer.close();
-					basketModel.clearBasket();
-				},
-			});
+			basketModel.clearBasket();
 			modalContainer.render({
 				content: success.render({ total: result.total }),
 			});
@@ -117,7 +118,7 @@ events.on(
 events.on(
 	'formErrors:change',
 	(errors: Partial<IOrderForm & IContactsForm>) => {
-		const { address, payment, phone, email } = errors;
+		const { address, payment, phone, email } = errors;				
 		order.valid = !address && !payment;
 		order.errors = Object.values({ payment, address })
 			.filter((i) => !!i)
@@ -130,7 +131,7 @@ events.on(
 );
 
 // Изменим кнопки вариантов оплаты
-events.on('order-model:change', () => {
+events.on('order-model:change', () => {	
 	order.payment = orderModel.order.payment;
 });
 
