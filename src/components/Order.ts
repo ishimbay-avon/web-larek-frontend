@@ -42,7 +42,7 @@ export class Order extends Form<IOrderForm> {
 	}
 
 	set payment(value: string) {				
-		this.toggleClass(this.cardButton, 'button_alt', value === 'card')
-		this.toggleClass(this.cashButton, 'button_alt', value === 'cash')
+		this.toggleClass(this.cardButton, 'button_alt-active', value === 'card')
+		this.toggleClass(this.cashButton, 'button_alt-active', value === 'cash')
 	}		
 }
